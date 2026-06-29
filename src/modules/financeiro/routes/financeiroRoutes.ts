@@ -6,21 +6,9 @@ import { ensureRole } from "../../../shared/middlewares/ensureRole";
 export const financeiroRoutes = Router();
 const financeiroController = new FinanceiroController();
 
-// Todos os endpoints financeiros exigem autenticação
 financeiroRoutes.use(ensureAuthenticated);
+financeiroRoutes.use(ensureRole(["Administrador", "Sindico"]));
 
-// Listagem inteligente (o Service decide o que devolver baseado no Perfil)s
+financeiroRoutes.post("/", financeiroController.create);
 financeiroRoutes.get("/", financeiroController.list);
-
-// Criação e Atualização são restritos à gestão
-financeiroRoutes.post(
-  "/", 
-  ensureRole(["Administrador", "Sindico"]), 
-  financeiroController.create
-);
-
-financeiroRoutes.patch(
-  "/:id/status", 
-  ensureRole(["Administrador", "Sindico"]), 
-  financeiroController.updateStatus
-);
+financeiroRoutes.patch("/:id_transacao/pagar", financeiroController.pagar);

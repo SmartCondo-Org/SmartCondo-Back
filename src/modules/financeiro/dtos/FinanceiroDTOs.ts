@@ -1,9 +1,8 @@
 export interface CreateTransacaoDTO {
   id_condominio: number;
-  id_apartamento?: number; // Opcional, pois pode ser uma despesa geral do condomínio
-  descricao: string;
-  tipo: "Despesa" | "Receita";
+  id_apartamento?: number;
+  tipo: string;
   valor: number;
-  status_pagamento: "Atrasado" | "Pendente" | "Pago";
-  data_vencimento: Date;
+  descricao: string;
+  data_vencimento: string | Date;
 }
