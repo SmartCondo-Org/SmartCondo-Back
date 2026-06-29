@@ -15,7 +15,6 @@ export class CreateOcorrenciaService {
       throw new AppError("Apartamento não encontrado.", 404);
     }
 
-    // Força o status inicial para 'Aberta'
     return await ocorrenciaRepository.create({
       id_apartamento,
       titulo,
