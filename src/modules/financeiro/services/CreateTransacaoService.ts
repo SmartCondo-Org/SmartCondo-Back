@@ -1,29 +1,32 @@
+import { FinanceiroRepository } from "../repositories/FinanceiroRepository";
 import { prismaClient } from "../../../shared/database/prismaClient";
+import { AppError } from "../../../shared/errors/AppError";
 import { CreateTransacaoDTO } from "../dtos/FinanceiroDTOs";
 
-export class FinanceiroRepository {
-  async create(data: CreateTransacaoDTO & { status_pagamento: string }) {
-    return await prismaClient.transacao.create({ data });
-  }
+export class CreateTransacaoService {
+  async execute({ id_condominio, id_apartamento, tipo, valor, descricao, data_vencimento }: CreateTransacaoDTO) {
+    const financeiroRepository = new FinanceiroRepository();
+    
+    const condominioExists = await prismaClient.condominio.findUnique({ where: { id_condominio } });
+    if (!condominioExists) throw new AppError("Condomínio não encontrado.", 404);
 
-  async findAllByCondominio(id_condominio: number) {
-    return await prismaClient.transacao.findMany({
-      where: { id_condominio },
-      orderBy: { data_vencimento: 'desc' }
-    });
-  }
+    if (id_apartamento) {
+      const apartamentoExists = await prismaClient.apartamento.findUnique({ where: { id_apartamento } });
+      if (!apartamentoExists) throw new AppError("Apartamento não encontrado.", 404);
+    }
 
-  async findById(id_transacao: number) {
-    return await prismaClient.transacao.findUnique({ where: { id_transacao } });
-  }
+    if (tipo !== "Receita" && tipo !== "Despesa") {
+      throw new AppError("O tipo de transação deve ser 'Receita' ou 'Despesa'.", 400);
+    }
 
-  async marcarComoPago(id_transacao: number) {
-    return await prismaClient.transacao.update({
-      where: { id_transacao },
-      data: {
-        status_pagamento: "Pago",
-        data_pagamento: new Date()
-      }
+    return await financeiroRepository.create({
+      id_condominio,
+      id_apartamento,
+      tipo,
+      valor,
+      descricao,
+      data_vencimento: new Date(data_vencimento),
+      status_pagamento: "Pendente"
     });
   }
 }
