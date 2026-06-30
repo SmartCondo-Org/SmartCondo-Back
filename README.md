@@ -13,6 +13,11 @@ Bash
 npx prisma generate
 Inicie o servidor de desenvolvimento:
 
+crie um arquivo .env a adicione as variáveis ambiente e seus valores.
+PORT;
+JWT_SECRET;
+DATABASE_URL.
+
 Bash
 npm run dev
 O que deve aparecer no terminal: Uma mensagem confirmando que a aplicação está rodando (geralmente na porta 3001, com um log do radar indicando [RADAR]).
